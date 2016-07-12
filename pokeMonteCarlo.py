@@ -48,21 +48,21 @@ def battle(type_database):
 		single_type_offense_score[i]=0
 #"i" is the defender's 1st type, "j" is the defender's 2nd type, "k" is the type of attack
 	for i in types:
-		defense_score[i]={}
+		defen	se_score[i]={}
 		for j in types:
 			defense_score[i][j]=0
 			relative_defensive_weight=1
 			for k in types:
 				relative_offensive_weight=1
-				defense_score[i][j]+=relative_offensive_weight*(type_database[k][i]+type_database[k][j])/2
-				offense_score[k]+=relative_defensive_weight*defense_score[i][j]
+				defense_score[i][j]-=relative_offensive_weight*(type_database[k][i]+type_database[k][j])/2
+				offense_score[k]+=relative_defensive_weight*(type_database[k][i]+type_database[k][j])/2
 				if i==j:
-					single_type_offense_score[k]+=relative_defensive_weight*defense_score[i][j]
-			if defense_score[i][j]>attack_high_score[1]:
+					single_type_offense_score[k]+=relative_defensive_weight*(type_database[k][i]+type_database[k][j])/2
+			if defense_score[i][j]>defense_high_score[1]:
 				defense_high_score[1]=defense_score[i][j]
 				defense_high_score[0]=i+j
 			if i==j:
-				if defense_score[i][j]>single_type_attack_high_score[1]:
+				if defense_score[i][j]>single_type_defense_high_score[1]:
 					single_type_defense_high_score[1]=defense_score[i][j]
 					single_type_defense_high_score[0]=i
 	for k in types:
@@ -72,4 +72,5 @@ def battle(type_database):
 		if single_type_offense_score[k]>single_type_attack_high_score[1]:
 			single_type_attack_high_score[1]=single_type_offense_score[k]
 			single_type_attack_high_score[0]=k
-	return [defense_score, offense_score, defense_high_score, attack_high_score, single_type_defense_high_score, single_type_offense_score]
+	return [single_type_attack_high_score, single_type_defense_high_score, attack_high_score, defense_high_score, offense_score, defense_score]
+
