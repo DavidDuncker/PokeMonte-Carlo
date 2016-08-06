@@ -1,13 +1,15 @@
+#!/usr/bin/env python
+
 import requests as requestHTTP
 from bs4 import BeautifulSoup as HTMLparser
 
 def gatherDataOnPokemonTypes():
 	httpRequestForData=requestHTTP.get('http://pokemondb.net/type')
-	if httpRequest.status_code!=200:
+	if httpRequestForData.status_code!=200:
 		print "Could not connect to server"
 		dictionaryOfPokemonTypesAndEffectiveness=None
 	else:
-		parsedHTML=HTMLparser(r._content,'html.parser')
+		parsedHTML=HTMLparser(httpRequestForData._content,'html.parser')
 		HTMLparsedListOfPokemonTypes=parsedHTML.find_all('a', class_='type-abbr')
 		cleanListOfPokemonTypes=[]
 		dictionaryOfPokemonTypesAndEffectiveness={}
@@ -39,7 +41,7 @@ def simulateBattleWithAllDifferentTypesOfPokemon(dictionaryOfPokemonTypesAndEffe
 	listOfPokemonTypes=dictionaryOfPokemonTypesAndEffectiveness.keys()
 	highestScoringAttackerType=['type',-999]
 	highestScoringSingleTypeAttacker=['type',-999]
-	highestScoringDefenderType=['type',-999]
+	highestScoringDefenderType=['type',-999	]
 	highestScoringSingleTypeDefender=['type',-999]
 	defenseScoreOfAllPokemonTypes={}
 	offenseScoreOfAllPokemonTypes={}
@@ -53,8 +55,8 @@ def simulateBattleWithAllDifferentTypesOfPokemon(dictionaryOfPokemonTypesAndEffe
 			relativeAbundanceOfDefensiveType=1
 			for attackingPokemonType in listOfPokemonTypes:
 				relativeAbundanceOfOffensiveType=1
-				defenseScoreOfAllPokemonTypes[i][j] -= relativeAbundanceOfOffensiveType*(dictionaryOfPokemonTypesAndEffectiveness[attackingPokemonType][firstDefendingPokemonType]+dictionaryOfPokemonTypesAndEffectiveness[attackingPokemonType][secondDefendingPokemonType])/2
-				offenseScoreOfAllPokemonTypes[k]+=relativeAbundanceOfDefensiveType*(dictionaryOfPokemonTypesAndEffectiveness[attackingPokemonType][firstDefendingPokemonType]+dictionaryOfPokemonTypesAndEffectiveness[attackingPokemonType][secondDefendingPokemonType])/2
+				defenseScoreOfAllPokemonTypes[firstDefendingPokemonType][secondDefendingPokemonType] -= relativeAbundanceOfOffensiveType*(dictionaryOfPokemonTypesAndEffectiveness[attackingPokemonType][firstDefendingPokemonType]+dictionaryOfPokemonTypesAndEffectiveness[attackingPokemonType][secondDefendingPokemonType])/2
+				offenseScoreOfAllPokemonTypes[attackingPokemonType]+=relativeAbundanceOfDefensiveType*(dictionaryOfPokemonTypesAndEffectiveness[attackingPokemonType][firstDefendingPokemonType]+dictionaryOfPokemonTypesAndEffectiveness[attackingPokemonType][secondDefendingPokemonType])/2
 			if defenseScoreOfAllPokemonTypes[firstDefendingPokemonType][secondDefendingPokemonType]>highestScoringDefenderType[1]:
 				highestScoringDefenderType[1]=defenseScoreOfAllPokemonTypes[firstDefendingPokemonType][secondDefendingPokemonType]
 				highestScoringDefenderType[0]=firstDefendingPokemonType+" "+secondDefendingPokemonType
@@ -63,8 +65,13 @@ def simulateBattleWithAllDifferentTypesOfPokemon(dictionaryOfPokemonTypesAndEffe
 					highestScoringSingleTypeDefender[1]=defenseScoreOfAllPokemonTypes[firstDefendingPokemonType][secondDefendingPokemonType]
 					highestScoringSingleTypeDefender[0]=firstDefendingPokemonType
 	for attackingPokemonType in listOfPokemonTypes:
-		if offenseScore[attackingPokemonType]>highestScoringAttackerType[1]:
-			highestScoringAttackerType[1]=offense_score[attackingPokemonType]
+		if offenseScoreOfAllPokemonTypes[attackingPokemonType]>highestScoringAttackerType[1]:
+			highestScoringAttackerType[1]=offenseScoreOfAllPokemonTypes[attackingPokemonType]
 			highestScoringAttackerType[0]=attackingPokemonType
+	listOfRelevantStats=[offenseScoreOfAllPokemonTypes,defenseScoreOfAllPokemonTypes,highestScoringAttackerType,highestScoringDefenderType]
+	print listOfRelevantStats
+	return listOfRelevantStats
 
-	return [offenseScoreOfAllPokemonTypes,defenseScoreOfAllPokemonTypes,highestScoringAttackerType,highestScoringDefenderType]
+if __name__ == "__main__":
+	dictionaryOfPokemonTypesAndEffectiveness=gatherDataOnPokemonTypes()
+	simulateBattleWithAllDifferentTypesOfPokemon(dictionaryOfPokemonTypesAndEffectiveness)
